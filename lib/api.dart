@@ -13,7 +13,6 @@ class Api {
   static Future<String> getHoliday() async {
     final httpsUri = Uri.https('api.itech-bs14.de', 'holiday');
     final response = await http.get(httpsUri);
-    print(jsonDecode(utf8.decode(response.bodyBytes))[0]);
     return utf8.decode(response.bodyBytes);
   }
 }

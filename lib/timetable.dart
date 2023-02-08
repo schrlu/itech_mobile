@@ -14,7 +14,7 @@ class _TimetableState extends State<Timetable> {
   late int i;
   late int j;
   final format = DateFormat('dd.MM.yyy');
-  Color color = Colors.grey;
+  late Color color;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +74,10 @@ class _TimetableState extends State<Timetable> {
           content: Text("Aktualisiert"),
         ));
       },
-      child: Icon(Icons.refresh),
+      child: Icon(
+        Icons.refresh,
+        color: Colors.white,
+      ),
       tooltip: 'refresh',
     );
   }
@@ -101,7 +104,8 @@ class _TimetableState extends State<Timetable> {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         crossAxisCount: 4,
-        childAspectRatio: 2,
+        childAspectRatio: (MediaQuery.of(context).size.width * 2.5) /
+            (MediaQuery.of(context).size.height),
         children: [
           newContentColumn(data, 'Klasse', 'class'),
           newContentColumn(data, 'Zeit', 'time'),
@@ -117,18 +121,15 @@ class _TimetableState extends State<Timetable> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(heading),
+        Flexible(
+          child: Text(heading),
+        ),
         if (jsonDecode(data)['dates'][i]['results'][j][content] == "")
-          const FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text('-'),
-          )
+          Text('-')
         else
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child:
-                Text('${jsonDecode(data)['dates'][i]['results'][j][content]}'),
-          ),
+          Flexible(
+              child: Text(
+                  '${jsonDecode(data)['dates'][i]['results'][j][content]}')),
       ],
     );
   }
@@ -136,11 +137,7 @@ class _TimetableState extends State<Timetable> {
   Container newWeekDay(String data) {
     DateTime date =
         DateTime.parse(jsonDecode(data)['dates'][i]['date'].toString());
-    if (Theme.of(context).indicatorColor != ThemeData().indicatorColor) {
-      color = Colors.blue.shade800;
-    } else {
-      color = Colors.blue;
-    }
+    color = Colors.blue.shade800;
 
     // color = Colors.black;
     if (!jsonDecode(data)['dates'][i]['results'].isEmpty) {

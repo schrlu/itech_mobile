@@ -12,7 +12,7 @@ class NavBar extends StatelessWidget {
         child: ListView(
           children: [
             Site('Stundenplan', Icons.schedule, Timetable(), 'timetable'),
-            Site('Ferienplan', Icons.schedule, Holiday(), 'holiday'),
+            Site('Ferienplan', Icons.beach_access, Holiday(), 'holiday'),
           ],
         ));
   }
