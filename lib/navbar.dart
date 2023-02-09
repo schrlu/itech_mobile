@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:itech_mobile/holiday.dart';
+import 'package:itech_mobile/settings.dart';
 import 'package:itech_mobile/timetable.dart';
 
 class NavBar extends StatelessWidget {
@@ -11,8 +12,9 @@ class NavBar extends StatelessWidget {
         key: Key('navBar'),
         child: ListView(
           children: [
-            Site('Stundenplan', Icons.schedule, Timetable(), 'timetable'),
+            Site('Vertretungsplan', Icons.schedule, Timetable(), 'timetable'),
             Site('Ferienplan', Icons.beach_access, Holiday(), 'holiday'),
+            Site('Einstellungen', Icons.settings, Settings(), 'settings'),
           ],
         ));
   }

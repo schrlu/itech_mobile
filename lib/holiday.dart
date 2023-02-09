@@ -19,7 +19,7 @@ class _HolidayState extends State<Holiday> {
     return Scaffold(
         drawer: NavBar(),
         appBar: AppBar(
-          title: Text('Itech-Mobile'),
+          title: const Text('Itech-Mobile'),
         ),
         body: ListView(
           children: [

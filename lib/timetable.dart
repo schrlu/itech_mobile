@@ -4,6 +4,8 @@ import 'package:itech_mobile/api.dart';
 import 'package:flutter/material.dart';
 import 'package:itech_mobile/navbar.dart';
 import 'package:intl/intl.dart';
+import 'package:itech_mobile/settings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Timetable extends StatefulWidget {
   @override
@@ -14,6 +16,7 @@ class _TimetableState extends State<Timetable> {
   late int i;
   late int j;
   final format = DateFormat('dd.MM.yyy');
+  late SharedPreferences prefs;
   late Color color;
   @override
   Widget build(BuildContext context) {
@@ -22,40 +25,47 @@ class _TimetableState extends State<Timetable> {
         appBar: AppBar(
           title: Text('Itech-Mobile'),
         ),
-        body: ListView(
-          children: <Widget>[
-            FutureBuilder(
-                future: Api.getTimetable(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Column(
-                      children: [
-                        for (i = 0;
-                            i <
-                                jsonDecode(snapshot.data as String)['dates']
-                                    .length;
-                            i++)
-                          Column(
-                            children: [
-                              newWeekDay(snapshot.data as String),
-                              for (j = 0;
-                                  j <
-                                      jsonDecode(snapshot.data as String)[
-                                              'dates'][i]['results']
-                                          .length;
-                                  j++)
-                                Container(
-                                  child: printContent(snapshot.data as String),
-                                ),
-                            ],
-                          )
-                      ],
-                    );
-                  } else {
-                    return Center(child: Text('Lädt...'));
-                  }
-                })
-          ],
+        body: FutureBuilder(
+          future: getPreferences(),
+          builder: (context, snapshot) {
+            prefs = snapshot.data!;
+            return ListView(
+              children: <Widget>[
+                FutureBuilder(
+                    future: Api.getTimetable(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Column(
+                          children: [
+                            for (i = 0;
+                                i <
+                                    jsonDecode(snapshot.data as String)['dates']
+                                        .length;
+                                i++)
+                              Column(
+                                children: [
+                                  newWeekDay(snapshot.data as String),
+                                  for (j = 0;
+                                      j <
+                                          jsonDecode(snapshot.data as String)[
+                                                  'dates'][i]['results']
+                                              .length;
+                                      j++)
+                                    Container(
+                                      child:
+                                          printContent(snapshot.data as String),
+                                    ),
+                                ],
+                              )
+                          ],
+                        );
+                      } else {
+                        return Center(child: Text('Lädt...'));
+                      }
+                    })
+              ],
+            );
+          },
         ),
         floatingActionButton: createRefreshButton());
   }
@@ -83,17 +93,24 @@ class _TimetableState extends State<Timetable> {
   }
 
   Container printContent(String data) {
-    if (Theme.of(context).indicatorColor != ThemeData().indicatorColor) {
-      if (color == Colors.grey.shade800) {
-        color = Colors.grey.shade700;
-      } else {
-        color = Colors.grey.shade800;
-      }
+    if (prefs.getString('studentClass') ==
+        jsonDecode(data)['dates'][i]['results'][j]['class']
+            .toString()
+            .toLowerCase()) {
+      color = Colors.pink;
     } else {
-      if (color == Colors.grey.shade300) {
-        color = Colors.grey.shade200;
+      if (Theme.of(context).indicatorColor != ThemeData().indicatorColor) {
+        if (color == Colors.grey.shade800) {
+          color = Colors.grey.shade700;
+        } else {
+          color = Colors.grey.shade800;
+        }
       } else {
-        color = Colors.grey.shade300;
+        if (color == Colors.grey.shade300) {
+          color = Colors.grey.shade200;
+        } else {
+          color = Colors.grey.shade300;
+        }
       }
     }
 
@@ -153,5 +170,13 @@ class _TimetableState extends State<Timetable> {
     } else {
       return Container();
     }
+  }
+
+  Future<SharedPreferences> getPreferences() async {
+    prefs = await SharedPreferences.getInstance();
+    if (prefs.getString('studentClass') == null) {
+      // tbc
+    }
+    return prefs;
   }
 }
