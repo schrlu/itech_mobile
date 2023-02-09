@@ -1,13 +1,13 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:itech_mobile/api.dart';
 import 'package:flutter/material.dart';
 import 'package:itech_mobile/navbar.dart';
 import 'package:intl/intl.dart';
-import 'package:itech_mobile/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Timetable extends StatefulWidget {
+  const Timetable({super.key});
+
   @override
   State<Timetable> createState() => _TimetableState();
 }
@@ -21,9 +21,9 @@ class _TimetableState extends State<Timetable> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: NavBar(),
+        drawer: const NavBar(),
         appBar: AppBar(
-          title: Text('Itech-Mobile'),
+          title: const Text('Itech-Mobile'),
         ),
         body: FutureBuilder(
           future: getPreferences(),
@@ -60,7 +60,7 @@ class _TimetableState extends State<Timetable> {
                           ],
                         );
                       } else {
-                        return Center(child: Text('Lädt...'));
+                        return const Center(child: Text('Lädt...'));
                       }
                     })
               ],
@@ -80,13 +80,14 @@ class _TimetableState extends State<Timetable> {
       backgroundColor: color,
       onPressed: () {
         setState(() {});
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Aktualisiert"),
         ));
       },
-      child: Icon(
-        Icons.refresh,
+      // ignore: sort_child_properties_last
+      child: const Icon(
         color: Colors.white,
+        Icons.refresh,
       ),
       tooltip: 'refresh',
     );
@@ -119,7 +120,7 @@ class _TimetableState extends State<Timetable> {
       child: ListTile(
           title: GridView.count(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         crossAxisCount: 4,
         childAspectRatio: (MediaQuery.of(context).size.width * 2.5) /
             (MediaQuery.of(context).size.height),
@@ -142,7 +143,7 @@ class _TimetableState extends State<Timetable> {
           child: Text(heading),
         ),
         if (jsonDecode(data)['dates'][i]['results'][j][content] == "")
-          Text('-')
+          const Text('-')
         else
           Flexible(
               child: Text(

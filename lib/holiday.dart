@@ -1,11 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:itech_mobile/api.dart';
 import 'package:flutter/material.dart';
 import 'package:itech_mobile/navbar.dart';
 import 'package:intl/intl.dart';
 
 class Holiday extends StatefulWidget {
+  const Holiday({super.key});
+
   @override
   State<Holiday> createState() => _HolidayState();
 }
@@ -36,7 +37,7 @@ class _HolidayState extends State<Holiday> {
                       // Text('${jsonDecode(snapshot.data as String)[i]}')
                     ]);
                   } else {
-                    return Center(child: Text('Lädt...'));
+                    return const Center(child: Text('Lädt...'));
                   }
                 }),
           ],
@@ -67,7 +68,7 @@ class _HolidayState extends State<Holiday> {
           children: [
             Text(
               '${jsonDecode(snapshot.data as String)[i]['name']}',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             GridView.count(
               shrinkWrap: true,

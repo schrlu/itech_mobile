@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:itech_mobile/navbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,7 +15,7 @@ class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: NavBar(),
+        drawer: const NavBar(),
         appBar: AppBar(title: const Text('Itech-Mobile')),
         body: FutureBuilder(
             future: getPreferences(),
@@ -26,7 +24,6 @@ class _SettingsState extends State<Settings> {
               return ListView(
                 children: [
                   classSetting(context),
-
                 ],
               );
             }));
@@ -34,38 +31,36 @@ class _SettingsState extends State<Settings> {
 
   Container classSetting(BuildContext context) {
     return Container(
-                  color: getColor(),
-                  child: ListTile(
-                    title: Text(
-                        'Klasse: ${prefs.getString('studentClass') != null ? prefs.getString('studentClass') : 'Nicht gewählt'}'),
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return SimpleDialog(
-                              title: Text(
-                                  'Gebe deine Klasse an, um dich betreffende Informationen hervorzuheben'),
-                              children: [
-                                TextField(onSubmitted: (value) {
-                                  prefs.setString('studentClass', value.toLowerCase());
-                                  Navigator.of(context).pop();
-                                  setState(() {});
-                                }),
-                                Container(
-                                  child: TextButton(
-                                      child: Text('Keine Klasse wählen'),
-                                      onPressed: () {
-                                        prefs.remove('studentClass');
-                                        Navigator.of(context).pop();
-                                        setState(() {});
-                                      }),
-                                )
-                              ],
-                            );
-                          });
-                    },
-                  ),
+      color: getColor(),
+      child: ListTile(
+        title: Text(
+            'Klasse: ${prefs.getString('studentClass') ?? 'Nicht gewählt'}'),
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return SimpleDialog(
+                  title:
+                      const Text('Gebe deine Klasse an, um sie zu markieren'),
+                  children: [
+                    TextField(onSubmitted: (value) {
+                      prefs.setString('studentClass', value.toLowerCase());
+                      Navigator.of(context).pop();
+                      setState(() {});
+                    }),
+                    TextButton(
+                        child: const Text('Keine Klasse wählen'),
+                        onPressed: () {
+                          prefs.remove('studentClass');
+                          Navigator.of(context).pop();
+                          setState(() {});
+                        })
+                  ],
                 );
+              });
+        },
+      ),
+    );
   }
 
   Color getColor() {
