@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:itech_mobile/login.dart';
 import 'package:itech_mobile/timetable.dart';
 
 void main() {
@@ -14,7 +15,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Itech-Mobile',
       darkTheme: ThemeData.dark(),
-      home: Timetable(),
+      theme: ThemeData.light(),
+      home: Login(),
       debugShowCheckedModeBanner: false,
     );
   }

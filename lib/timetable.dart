@@ -16,7 +16,7 @@ class _TimetableState extends State<Timetable> {
   late int i;
   late int j;
   final format = DateFormat('dd.MM.yyy');
-  late SharedPreferences prefs;
+  late SharedPreferences? prefs;
   late Color color;
   @override
   Widget build(BuildContext context) {
@@ -29,9 +29,8 @@ class _TimetableState extends State<Timetable> {
           future: getPreferences(),
           builder: (context, snapshot) {
             prefs = snapshot.data!;
-            return ListView(
-              children: <Widget>[
-                FutureBuilder(
+            return SingleChildScrollView(
+                child: FutureBuilder(
                     future: Api.getTimetable(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
@@ -54,7 +53,7 @@ class _TimetableState extends State<Timetable> {
                                     Container(
                                       child:
                                           printContent(snapshot.data as String),
-                                    ),
+                                    )
                                 ],
                               )
                           ],
@@ -62,9 +61,7 @@ class _TimetableState extends State<Timetable> {
                       } else {
                         return const Center(child: Text('Lädt...'));
                       }
-                    })
-              ],
-            );
+                    }));
           },
         ),
         floatingActionButton: createRefreshButton());
@@ -94,10 +91,11 @@ class _TimetableState extends State<Timetable> {
   }
 
   Container printContent(String data) {
-    if (prefs.getString('studentClass') ==
-        jsonDecode(data)['dates'][i]['results'][j]['class']
-            .toString()
-            .toLowerCase()) {
+    if (prefs!.containsKey('studentClass') &&
+        prefs!.getString('studentClass') ==
+            jsonDecode(data)['dates'][i]['results'][j]['class']
+                .toString()
+                .toLowerCase()) {
       color = Colors.pink;
     } else {
       if (Theme.of(context).indicatorColor != ThemeData().indicatorColor) {
@@ -118,12 +116,7 @@ class _TimetableState extends State<Timetable> {
     return Container(
       color: color,
       child: ListTile(
-          title: GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: 4,
-        childAspectRatio: (MediaQuery.of(context).size.width * 2.5) /
-            (MediaQuery.of(context).size.height),
+          title: Row(
         children: [
           newContentColumn(data, 'Klasse', 'class'),
           newContentColumn(data, 'Zeit', 'time'),
@@ -134,21 +127,28 @@ class _TimetableState extends State<Timetable> {
     );
   }
 
-  Column newContentColumn(String data, String heading, String content) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Flexible(
-          child: Text(heading),
-        ),
-        if (jsonDecode(data)['dates'][i]['results'][j][content] == "")
-          const Text('-')
-        else
+  SizedBox newContentColumn(String data, String heading, String content) {
+    return SizedBox(
+      width: ((MediaQuery.of(context).size.width) / 4) - 8,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
           Flexible(
-              child: Text(
-                  '${jsonDecode(data)['dates'][i]['results'][j][content]}')),
-      ],
+            child: Text(
+              heading,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          if (jsonDecode(data)['dates'][i]['results'][j][content] == "")
+            const Text('-')
+          else
+            Flexible(
+                child: Text(
+                    '${jsonDecode(data)['dates'][i]['results'][j][content]}')),
+        ],
+      ),
     );
   }
 
@@ -175,9 +175,6 @@ class _TimetableState extends State<Timetable> {
 
   Future<SharedPreferences> getPreferences() async {
     prefs = await SharedPreferences.getInstance();
-    if (prefs.getString('studentClass') == null) {
-      // tbc
-    }
-    return prefs;
+    return prefs!;
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:itech_mobile/navbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -86,9 +88,10 @@ class _SettingsState extends State<Settings> {
 
   Future<SharedPreferences> getPreferences() async {
     prefs = await SharedPreferences.getInstance();
-    if (prefs.getString('studentClass') == null) {
-      // tbc
-    }
+    // if (!prefs.containsKey('studentClass')) {
+    //   await prefs.setString('studentClass', '');
+    // }
+
     return prefs;
   }
 }
