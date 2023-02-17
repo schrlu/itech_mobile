@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:itech_mobile/api.dart';
+import 'package:itech_mobile/ownapi.dart';
 import 'package:flutter/material.dart';
 import 'package:itech_mobile/navbar.dart';
 import 'package:intl/intl.dart';
@@ -31,7 +31,7 @@ class _TimetableState extends State<Timetable> {
             prefs = snapshot.data!;
             return SingleChildScrollView(
                 child: FutureBuilder(
-                    future: Api.getTimetable(),
+                    future: OwnApi.getTimetable(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return Column(

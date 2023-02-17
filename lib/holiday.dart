@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:itech_mobile/api.dart';
+import 'package:itech_mobile/ownapi.dart';
 import 'package:flutter/material.dart';
 import 'package:itech_mobile/navbar.dart';
 import 'package:intl/intl.dart';
@@ -18,14 +18,14 @@ class _HolidayState extends State<Holiday> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: NavBar(),
+        drawer: const NavBar(),
         appBar: AppBar(
           title: const Text('Itech-Mobile'),
         ),
         body: ListView(
           children: [
             FutureBuilder(
-                future: Api.getHoliday(),
+                future: OwnApi.getHoliday(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return Column(children: [

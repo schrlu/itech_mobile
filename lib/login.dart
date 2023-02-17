@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:itech_mobile/ownapi.dart';
 import 'package:itech_mobile/signup.dart';
 import 'package:itech_mobile/timetable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+  final SharedPreferences prefs;
+  const Login({Key? key, required this.prefs}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginState createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+  final tokenController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    usernameController.text = widget.prefs.getString('username')!;
+    passwordController.text = widget.prefs.getString('password')!;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login Page"),
@@ -31,38 +41,50 @@ class _LoginState extends State<Login> {
                     child: Image.asset('images/Itech.png')),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
-                decoration: InputDecoration(
+                controller: usernameController,
+                decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Benutzer',
                     hintText: 'Moodle-Benutzername'),
               ),
             ),
-            const Padding(
-              padding:
-                  EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 15, bottom: 0),
               //padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
+                controller: passwordController,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Passwort',
                     hintText: 'Dein Moodle-Passwort'),
               ),
             ),
-            const Padding(
-              padding:
-                  EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 15, bottom: 20),
               //padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
+                controller: tokenController,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: '2FA-Token',
                     hintText: 'Zweifaktor Authentifizierungs-Token'),
               ),
+            ),
+            CheckboxListTile(
+              value: widget.prefs.getBool('rememberLogin'),
+              title: const Text('Anmeldedaten speichern'),
+              onChanged: (newValue) {
+                setState(() {
+                  widget.prefs.setBool('rememberLogin', newValue!);
+                });
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20),
@@ -73,9 +95,21 @@ class _LoginState extends State<Login> {
                     color: Colors.blue,
                     borderRadius: BorderRadius.circular(20)),
                 child: TextButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const Timetable()));
+                  onPressed: () async {
+                    if (await OwnApi.login(usernameController.text,
+                        passwordController.text, tokenController.text)) {
+                      if (widget.prefs.getBool('rememberLogin') == true) {
+                        widget.prefs
+                            .setString('username', usernameController.text);
+                        widget.prefs
+                            .setString('password', passwordController.text);
+                      } else {
+                        widget.prefs.setString('username', '');
+                        widget.prefs.setString('password', '');
+                      }
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => const Timetable()));
+                    }
                   },
                   child: const Text(
                     'Login',
@@ -94,7 +128,7 @@ class _LoginState extends State<Login> {
               ),
             ),
             const SizedBox(
-              height: 100,
+              height: 70,
             ),
             TextButton(
               child: const Text(

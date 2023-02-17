@@ -14,14 +14,16 @@ class NavBar extends StatelessWidget {
         key: const Key('navBar'),
         child: ListView(
           children: [
-            Site('Vertretungsplan', Icons.schedule, Timetable(), 'timetable'),
-            Site('Ferienplan', Icons.beach_access, Holiday(), 'holiday'),
-            Site('Einstellungen', Icons.settings, Settings(), 'settings'),
+            Site('Vertretungsplan', Icons.schedule, const Timetable(),
+                'timetable'),
+            Site('Ferienplan', Icons.beach_access, const Holiday(), 'holiday'),
+            Site('Einstellungen', Icons.settings, const Settings(), 'settings'),
           ],
         ));
   }
 }
 
+// ignore: must_be_immutable
 class Site extends StatelessWidget {
   IconData icon;
   Widget page;

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:itech_mobile/login.dart';
 import 'package:itech_mobile/timetable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _SignupState createState() => _SignupState();
 }
 
@@ -99,11 +101,13 @@ class _SignupState extends State<Signup> {
             ),
             TextButton(
               child: const Text('Bereits registriert? Hier gehts zum Login'),
-              onPressed: () {
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                // ignore: use_build_context_synchronously
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Login(),
+                    builder: (context) => Login(prefs: prefs),
                   ),
                 );
               },
