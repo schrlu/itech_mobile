@@ -14,14 +14,26 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
-  final tokenController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController tokenController = TextEditingController();
+  bool passwordVisible = true;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   passwordVisible = true;
+  // }
 
   @override
   Widget build(BuildContext context) {
-    usernameController.text = widget.prefs.getString('username')!;
-    passwordController.text = widget.prefs.getString('password')!;
+    if (usernameController.text == '') {
+      usernameController.text = widget.prefs.getString('username')!;
+    }
+    if (passwordController.text == '') {
+      passwordController.text = widget.prefs.getString('password')!;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login Page"),
@@ -57,8 +69,20 @@ class _LoginState extends State<Login> {
               //padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
                 controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
+                obscureText: passwordVisible,
+                decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                      icon: Icon(passwordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off),
+                      onPressed: () {
+                        setState(
+                          () {
+                            passwordVisible = !passwordVisible;
+                          },
+                        );
+                      },
+                    ),
                     border: OutlineInputBorder(),
                     labelText: 'Passwort',
                     hintText: 'Dein Moodle-Passwort'),
@@ -96,8 +120,13 @@ class _LoginState extends State<Login> {
                     borderRadius: BorderRadius.circular(20)),
                 child: TextButton(
                   onPressed: () async {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Login...")));
                     if (await OwnApi.login(usernameController.text,
                         passwordController.text, tokenController.text)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Login erfolgreich")));
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
                       if (widget.prefs.getBool('rememberLogin') == true) {
                         widget.prefs
                             .setString('username', usernameController.text);
@@ -107,8 +136,17 @@ class _LoginState extends State<Login> {
                         widget.prefs.setString('username', '');
                         widget.prefs.setString('password', '');
                       }
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => const Timetable()));
+                      // ignore: use_build_context_synchronously
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => Timetable(
+                                    prefs: widget.prefs,
+                                  )));
+                    } else {
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text("Login fehlgeschlagen")));
                     }
                   },
                   child: const Text(
@@ -137,7 +175,9 @@ class _LoginState extends State<Login> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Signup(),
+                    builder: (context) => Signup(
+                      prefs: widget.prefs,
+                    ),
                   ),
                 );
               },

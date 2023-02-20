@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:itech_mobile/blockplan.dart';
 import 'package:itech_mobile/holiday.dart';
+import 'package:itech_mobile/ownapi.dart';
 import 'package:itech_mobile/settings.dart';
 import 'package:itech_mobile/timetable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NavBar extends StatelessWidget {
-  const NavBar({super.key});
+  final prefs;
+  const NavBar({Key? key, required this.prefs}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +18,24 @@ class NavBar extends StatelessWidget {
         key: const Key('navBar'),
         child: ListView(
           children: [
-            Site('Vertretungsplan', Icons.schedule, const Timetable(),
+            Site(
+                'Vertretungsplan',
+                Icons.schedule,
+                Timetable(
+                  prefs: prefs,
+                ),
                 'timetable'),
-            Site('Ferienplan', Icons.beach_access, const Holiday(), 'holiday'),
-            Site('Einstellungen', Icons.settings, const Settings(), 'settings'),
+            Site(
+                'Ferienplan',
+                Icons.beach_access,
+                Holiday(
+                  prefs: prefs,
+                ),
+                'holiday'),
+            Site('Blockplan', Icons.calendar_month, Blockplan(prefs: prefs),
+                'blockplan'),
+            Site('Einstellungen', Icons.settings, Settings(prefs: prefs),
+                'settings'),
           ],
         ));
   }

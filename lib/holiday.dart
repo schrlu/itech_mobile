@@ -5,7 +5,8 @@ import 'package:itech_mobile/navbar.dart';
 import 'package:intl/intl.dart';
 
 class Holiday extends StatefulWidget {
-  const Holiday({super.key});
+  final prefs;
+  const Holiday({Key? key, required this.prefs}) : super(key: key);
 
   @override
   State<Holiday> createState() => _HolidayState();
@@ -18,7 +19,7 @@ class _HolidayState extends State<Holiday> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: const NavBar(),
+        drawer: NavBar(prefs: widget.prefs),
         appBar: AppBar(
           title: const Text('Itech-Mobile'),
         ),

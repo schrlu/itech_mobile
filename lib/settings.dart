@@ -3,38 +3,34 @@ import 'package:itech_mobile/navbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings extends StatefulWidget {
-  const Settings({super.key});
+  final prefs;
+  const Settings({Key? key, required this.prefs}) : super(key: key);
 
   @override
   State<Settings> createState() => _SettingsState();
 }
 
 class _SettingsState extends State<Settings> {
-  late SharedPreferences prefs;
+  final classController = TextEditingController();
   Color color = Colors.black;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: const NavBar(),
+        drawer: NavBar(prefs: widget.prefs),
         appBar: AppBar(title: const Text('Itech-Mobile')),
-        body: FutureBuilder(
-            future: getPreferences(),
-            builder: (context, snapshot) {
-              prefs = snapshot.data!;
-              return ListView(
-                children: [
-                  classSetting(context),
-                ],
-              );
-            }));
+        body: ListView(
+          children: [
+            classSetting(context, widget.prefs),
+          ],
+        ));
   }
 
-  Container classSetting(BuildContext context) {
+  Container classSetting(BuildContext context, SharedPreferences prefs) {
     return Container(
       color: getColor(),
       child: ListTile(
         title: Text(
-            'Klasse: ${prefs.getString('studentClass') ?? 'Nicht gewählt'}'),
+            'Vertretungsplanmarkierung: ${prefs.getString('studentClass') ?? 'Nicht gewählt'}'),
         onTap: () {
           showDialog(
               context: context,
@@ -43,18 +39,33 @@ class _SettingsState extends State<Settings> {
                   title:
                       const Text('Gebe deine Klasse an, um sie zu markieren'),
                   children: [
-                    TextField(onSubmitted: (value) {
-                      prefs.setString('studentClass', value.toLowerCase());
-                      Navigator.of(context).pop();
-                      setState(() {});
-                    }),
-                    TextButton(
-                        child: const Text('Keine Klasse wählen'),
-                        onPressed: () {
-                          prefs.remove('studentClass');
+                    TextField(
+                        controller: classController,
+                        onSubmitted: (value) {
+                          prefs.setString('studentClass', value.toLowerCase());
                           Navigator.of(context).pop();
                           setState(() {});
-                        })
+                        }),
+                    Row(
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              prefs.setString('studentClass',
+                                  classController.text.toLowerCase());
+                              Navigator.of(context).pop();
+                              setState(() {});
+                            },
+                            child: Text('Bestätigen')),
+                        Spacer(),
+                        TextButton(
+                            child: const Text('Keine Klasse wählen'),
+                            onPressed: () {
+                              prefs.setString('studentClass', '');
+                              Navigator.of(context).pop();
+                              setState(() {});
+                            }),
+                      ],
+                    )
                   ],
                 );
               });
@@ -78,18 +89,5 @@ class _SettingsState extends State<Settings> {
       }
     }
     return color;
-  }
-
-  void setStudentClass(String studentClass) {
-    prefs.setString('studentClass', studentClass);
-  }
-
-  Future<SharedPreferences> getPreferences() async {
-    prefs = await SharedPreferences.getInstance();
-    // if (!prefs.containsKey('studentClass')) {
-    //   await prefs.setString('studentClass', '');
-    // }
-
-    return prefs;
   }
 }

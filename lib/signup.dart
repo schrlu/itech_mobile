@@ -4,7 +4,8 @@ import 'package:itech_mobile/timetable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Signup extends StatefulWidget {
-  const Signup({super.key});
+  final prefs;
+  const Signup({Key? key, required this.prefs}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -77,8 +78,12 @@ class _SignupState extends State<Signup> {
                     borderRadius: BorderRadius.circular(20)),
                 child: TextButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const Timetable()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => Timetable(
+                                  prefs: widget.prefs,
+                                )));
                   },
                   child: const Text(
                     'Registrieren',
@@ -102,12 +107,11 @@ class _SignupState extends State<Signup> {
             TextButton(
               child: const Text('Bereits registriert? Hier gehts zum Login'),
               onPressed: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
                 // ignore: use_build_context_synchronously
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Login(prefs: prefs),
+                    builder: (context) => Login(prefs: widget.prefs),
                   ),
                 );
               },

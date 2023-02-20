@@ -6,7 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Timetable extends StatefulWidget {
-  const Timetable({super.key});
+  final prefs;
+  const Timetable({Key? key, required this.prefs}) : super(key: key);
 
   @override
   State<Timetable> createState() => _TimetableState();
@@ -21,47 +22,54 @@ class _TimetableState extends State<Timetable> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: const NavBar(),
+        drawer: NavBar(prefs: widget.prefs,),
         appBar: AppBar(
           title: const Text('Itech-Mobile'),
         ),
         body: FutureBuilder(
           future: getPreferences(),
           builder: (context, snapshot) {
-            prefs = snapshot.data!;
-            return SingleChildScrollView(
-                child: FutureBuilder(
-                    future: OwnApi.getTimetable(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Column(
-                          children: [
-                            for (i = 0;
-                                i <
-                                    jsonDecode(snapshot.data as String)['dates']
-                                        .length;
-                                i++)
-                              Column(
-                                children: [
-                                  newWeekDay(snapshot.data as String),
-                                  for (j = 0;
-                                      j <
-                                          jsonDecode(snapshot.data as String)[
-                                                  'dates'][i]['results']
-                                              .length;
-                                      j++)
-                                    Container(
-                                      child:
-                                          printContent(snapshot.data as String),
-                                    )
-                                ],
-                              )
-                          ],
-                        );
-                      } else {
-                        return const Center(child: Text('Lädt...'));
-                      }
-                    }));
+            if (snapshot.hasData) {
+              prefs = snapshot.data!;
+              return SingleChildScrollView(
+                  child: FutureBuilder(
+                      future: OwnApi.getTimetable(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Column(
+                            children: [
+                              for (i = 0;
+                                  i <
+                                      jsonDecode(
+                                              snapshot.data as String)['dates']
+                                          .length;
+                                  i++)
+                                Column(
+                                  children: [
+                                    newWeekDay(snapshot.data as String),
+                                    for (j = 0;
+                                        j <
+                                            jsonDecode(snapshot.data as String)[
+                                                    'dates'][i]['results']
+                                                .length;
+                                        j++)
+                                      Container(
+                                        child: printContent(
+                                            snapshot.data as String),
+                                      )
+                                  ],
+                                )
+                            ],
+                          );
+                        } else {
+                          return const Center(child: Text('Lädt...'));
+                        }
+                      }));
+            } else {
+              return Center(
+                child: Text('Lädt...'),
+              );
+            }
           },
         ),
         floatingActionButton: createRefreshButton());
