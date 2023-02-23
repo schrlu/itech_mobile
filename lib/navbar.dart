@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:itech_mobile/blockplan.dart';
 import 'package:itech_mobile/holiday.dart';
-import 'package:itech_mobile/ownapi.dart';
 import 'package:itech_mobile/settings.dart';
 import 'package:itech_mobile/timetable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NavBar extends StatelessWidget {
-  final prefs;
+  final SharedPreferences prefs;
   const NavBar({Key? key, required this.prefs}) : super(key: key);
 
   @override

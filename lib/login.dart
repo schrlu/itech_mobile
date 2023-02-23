@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, duplicate_ignore
+
 import 'package:flutter/material.dart';
 import 'package:itech_mobile/ownapi.dart';
 import 'package:itech_mobile/signup.dart';
@@ -83,7 +85,7 @@ class _LoginState extends State<Login> {
                         );
                       },
                     ),
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                     labelText: 'Passwort',
                     hintText: 'Dein Moodle-Passwort'),
               ),
@@ -117,7 +119,7 @@ class _LoginState extends State<Login> {
                 children: [
                   Container(
                     height: 50,
-                    width: MediaQuery.of(context).size.width / 3,
+                    width: MediaQuery.of(context).size.width / 2.5,
                     decoration: BoxDecoration(
                         color: Colors.blue,
                         borderRadius: BorderRadius.circular(20)),
@@ -153,7 +155,7 @@ class _LoginState extends State<Login> {
                                   content: Text("Login fehlgeschlagen")));
                         }
                       },
-                      child: Text(
+                      child: const Text(
                         'Login',
                         style: TextStyle(color: Colors.white, fontSize: 25),
                       ),
@@ -161,7 +163,7 @@ class _LoginState extends State<Login> {
                   ),
                   Container(
                     height: 50,
-                    width: MediaQuery.of(context).size.width / 3,
+                    width: MediaQuery.of(context).size.width / 2.5,
                     decoration: BoxDecoration(
                         color: Colors.blue,
                         borderRadius: BorderRadius.circular(20)),
@@ -174,21 +176,12 @@ class _LoginState extends State<Login> {
                             (Route<dynamic> route) => false);
                       },
                       child: const Text(
-                        'ohne Login',
+                        'Ohne Login',
                         style: TextStyle(color: Colors.white, fontSize: 25),
                       ),
                     ),
                   ),
                 ],
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                //TODO FORGOT PASSWORD SCREEN GOES HERE
-              },
-              child: const Text(
-                'Passwort vergessen',
-                style: TextStyle(color: Colors.blue, fontSize: 15),
               ),
             ),
             const SizedBox(

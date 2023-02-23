@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:intl/intl.dart';
 import 'package:itech_mobile/login.dart';
 import 'package:itech_mobile/navbar.dart';
@@ -12,7 +10,7 @@ import 'ownapi.dart';
 
 class Blockplan extends StatefulWidget {
   final SharedPreferences prefs;
-  Blockplan({Key? key, required this.prefs}) : super(key: key);
+  const Blockplan({Key? key, required this.prefs}) : super(key: key);
 
   @override
   State<Blockplan> createState() => _BlockplanState();
@@ -36,7 +34,7 @@ class _BlockplanState extends State<Blockplan> {
     return Scaffold(
       drawer: NavBar(prefs: widget.prefs),
       appBar:
-          AppBar(title: Text('Itech-Blockplanung'), actions: [chooseClass()]),
+          AppBar(title: const Text('Itech-Blockplanung'), actions: [chooseClass()]),
       body: FutureBuilder(
         future: OwnApi.authstatus(),
         builder: (context, snapshot) {
@@ -55,7 +53,7 @@ class _BlockplanState extends State<Blockplan> {
                             children: [Text('${snapshot.data}')],
                           );
                         } else {
-                          return Center(
+                          return const Center(
                             child: Text('Lädt...'),
                           );
                         }
@@ -81,7 +79,7 @@ class _BlockplanState extends State<Blockplan> {
               //
             }
           } else {
-            return Scaffold(
+            return const Scaffold(
                 body: Center(
               child: Text('Lädt...'),
             ));
@@ -101,7 +99,7 @@ class _BlockplanState extends State<Blockplan> {
                   return StatefulBuilder(
                     builder: (context, setState) {
                       return SimpleDialog(
-                        title: Text('Klasse auswählen'),
+                        title: const Text('Klasse auswählen'),
                         children: [
                           FutureBuilder(
                             future: OwnApi.getClasses(),
@@ -113,7 +111,7 @@ class _BlockplanState extends State<Blockplan> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       DropdownButton(
-                                        hint: Text('Bitte Klasse wählen'),
+                                        hint: const Text('Bitte Klasse wählen'),
                                         items: itemList
                                             .map<DropdownMenuItem<String>>(
                                           (String value) {
@@ -154,7 +152,7 @@ class _BlockplanState extends State<Blockplan> {
                                   ),
                                 );
                               } else {
-                                return Center(child: Text('Lädt...'));
+                                return const Center(child: Text('Lädt...'));
                               }
                             },
                           )
@@ -165,7 +163,7 @@ class _BlockplanState extends State<Blockplan> {
                 });
           }
         },
-        child: Text('Klasse auswählen'));
+        child: const Text('Klasse auswählen'));
   }
 
   List<String> getItems(String items) {

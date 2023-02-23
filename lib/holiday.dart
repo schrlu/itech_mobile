@@ -3,9 +3,10 @@ import 'package:itech_mobile/ownapi.dart';
 import 'package:flutter/material.dart';
 import 'package:itech_mobile/navbar.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Holiday extends StatefulWidget {
-  final prefs;
+  final SharedPreferences prefs;
   const Holiday({Key? key, required this.prefs}) : super(key: key);
 
   @override
@@ -72,7 +73,7 @@ class _HolidayState extends State<Holiday> {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             GridView.count(
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               childAspectRatio: (MediaQuery.of(context).size.width * 8) /
                   (MediaQuery.of(context).size.height),

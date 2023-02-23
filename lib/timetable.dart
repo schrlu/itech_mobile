@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Timetable extends StatefulWidget {
-  final prefs;
+  final SharedPreferences prefs;
   const Timetable({Key? key, required this.prefs}) : super(key: key);
 
   @override
@@ -22,7 +22,9 @@ class _TimetableState extends State<Timetable> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: NavBar(prefs: widget.prefs,),
+        drawer: NavBar(
+          prefs: widget.prefs,
+        ),
         appBar: AppBar(
           title: const Text('Itech-Mobile'),
         ),
@@ -66,7 +68,7 @@ class _TimetableState extends State<Timetable> {
                         }
                       }));
             } else {
-              return Center(
+              return const Center(
                 child: Text('Lädt...'),
               );
             }

@@ -4,7 +4,7 @@ import 'package:itech_mobile/timetable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Signup extends StatefulWidget {
-  final prefs;
+  final SharedPreferences prefs;
   const Signup({Key? key, required this.prefs}) : super(key: key);
 
   @override
@@ -90,15 +90,6 @@ class _SignupState extends State<Signup> {
                     style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
                 ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                //TODO FORGOT PASSWORD SCREEN GOES HERE
-              },
-              child: const Text(
-                'Passwort vergessen',
-                style: TextStyle(color: Colors.blue, fontSize: 15),
               ),
             ),
             const SizedBox(

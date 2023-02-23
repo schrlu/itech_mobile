@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_string_interpolations
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -46,7 +48,7 @@ class OwnApi {
       client.close();
       return true;
     } else {
-      print('${response.reasonPhrase}${response.statusCode}');
+      // print('${response.reasonPhrase}${response.statusCode}');
       client.close();
       return false;
     }
@@ -55,9 +57,7 @@ class OwnApi {
   static Future<bool> authstatus() async {
     final prefs = await SharedPreferences.getInstance();
     var client = http.Client();
-    var headers = {
-      'Authorization': 'Bearer ${await prefs.getString('apiKey')}'
-    };
+    var headers = {'Authorization': 'Bearer ${prefs.getString('apiKey')}'};
     var response = await client.get(
         Uri.parse('https://api.itech-bs14.de/authstatus'),
         headers: headers);
@@ -66,7 +66,7 @@ class OwnApi {
       client.close();
       return true;
     } else {
-      print('${response.reasonPhrase}${response.statusCode}');
+      // print('${response.reasonPhrase}${response.statusCode}');
       client.close();
       return false;
     }
@@ -83,8 +83,7 @@ class OwnApi {
       client.close();
       return utf8.decode(response.bodyBytes);
     } else {
-      print(
-          '${'${response.reasonPhrase}${response.statusCode}'}${response.statusCode}');
+      // print('${response.reasonPhrase}${response.statusCode}');
       client.close();
       return '';
     }
@@ -104,7 +103,7 @@ class OwnApi {
       return utf8.decode(response.bodyBytes);
     } else {
       client.close();
-      print('${response.reasonPhrase}${response.statusCode}');
+      // print('${response.reasonPhrase}${response.statusCode}');
       return '';
     }
   }

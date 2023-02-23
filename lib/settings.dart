@@ -3,7 +3,7 @@ import 'package:itech_mobile/navbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings extends StatefulWidget {
-  final prefs;
+  final SharedPreferences prefs;
   const Settings({Key? key, required this.prefs}) : super(key: key);
 
   @override
@@ -56,8 +56,8 @@ class _SettingsState extends State<Settings> {
                               Navigator.of(context).pop();
                               setState(() {});
                             },
-                            child: Text('Bestätigen')),
-                        Spacer(),
+                            child: const Text('Bestätigen')),
+                        const Spacer(),
                         TextButton(
                             child: const Text('Keine Klasse wählen'),
                             onPressed: () {
