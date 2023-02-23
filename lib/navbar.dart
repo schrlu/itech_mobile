@@ -16,7 +16,8 @@ class NavBar extends StatelessWidget {
     return Drawer(
         backgroundColor: const Color.fromARGB(255, 1, 5, 6),
         key: const Key('navBar'),
-        child: ListView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Site(
                 'Vertretungsplan',
@@ -58,12 +59,9 @@ class Site extends StatelessWidget {
       leading: Icon(icon, color: Colors.white),
       title: Text(title),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => page,
-          ),
-        );
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => page),
+            (Route<dynamic> route) => false);
       },
     );
   }

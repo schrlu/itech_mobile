@@ -35,6 +35,7 @@ class _SettingsState extends State<Settings> {
           showDialog(
               context: context,
               builder: (BuildContext context) {
+                classController.text = prefs.getString('studentClass')!;
                 return SimpleDialog(
                   title:
                       const Text('Gebe deine Klasse an, um sie zu markieren'),

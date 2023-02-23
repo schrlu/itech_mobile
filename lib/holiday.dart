@@ -72,6 +72,7 @@ class _HolidayState extends State<Holiday> {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             GridView.count(
+              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               childAspectRatio: (MediaQuery.of(context).size.width * 8) /
                   (MediaQuery.of(context).size.height),

@@ -1,78 +1,110 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OwnApi {
   static Future<String> getTimetable() async {
-    final httpsUri = Uri.https('api.itech-bs14.de', 'standin');
-    final response = await http.get(httpsUri);
-    return utf8.decode(response.bodyBytes);
+    var client = HttpClient();
+    HttpClientRequest request =
+        await client.get('api.itech-bs14.de', 80, '/standin');
+    HttpClientResponse response = await request.close();
+    final stringData = await response.transform(utf8.decoder).join();
+    // print(stringData);
+    client.close();
+    return stringData;
   }
 
   static Future<String> getHoliday() async {
-    final httpsUri = Uri.https('api.itech-bs14.de', 'holiday');
-    final response = await http.get(httpsUri);
-    return utf8.decode(response.bodyBytes);
+    var client = HttpClient();
+    HttpClientRequest request =
+        await client.get('api.itech-bs14.de', 80, '/holiday');
+    HttpClientResponse response = await request.close();
+    final stringData = await response.transform(utf8.decoder).join();
+    client.close();
+    return stringData;
   }
 
   static Future<bool> login(
       String username, String password, String token) async {
+    var client = http.Client();
     final prefs = await SharedPreferences.getInstance();
     var headers = {'Content-Type': 'application/json'};
-    var request =
-        http.Request('POST', Uri.parse('https://api.itech-bs14.de/login'));
-    request.body = json.encode(
-        {"username": "$username", "password": "$password", "code": "$token"});
-    request.headers.addAll(headers);
-
-    http.StreamedResponse response = await request.send();
+    var response = await client.post(
+        Uri.parse('https://api.itech-bs14.de/login'),
+        body: json.encode({
+          "username": "$username",
+          "password": "$password",
+          "code": "$token"
+        }),
+        headers: headers);
 
     if (response.statusCode == 200) {
       await prefs.setString(
-          'apiKey', jsonDecode(await response.stream.bytesToString())['token']);
+          'apiKey', jsonDecode(utf8.decode(response.bodyBytes))['token']);
+      client.close();
       return true;
     } else {
-      print(response.reasonPhrase);
+      print('${response.reasonPhrase}${response.statusCode}');
+      client.close();
       return false;
     }
   }
 
   static Future<bool> authstatus() async {
     final prefs = await SharedPreferences.getInstance();
+    var client = http.Client();
     var headers = {
       'Authorization': 'Bearer ${await prefs.getString('apiKey')}'
     };
-    var request =
-        http.Request('GET', Uri.parse('https://api.itech-bs14.de/authstatus'));
-
-    request.headers.addAll(headers);
-
-    http.StreamedResponse response = await request.send();
+    var response = await client.get(
+        Uri.parse('https://api.itech-bs14.de/authstatus'),
+        headers: headers);
 
     if (response.statusCode == 200) {
-      // print(await response.stream.bytesToString());
+      client.close();
       return true;
     } else {
-      print(response.reasonPhrase);
+      print('${response.reasonPhrase}${response.statusCode}');
+      client.close();
       return false;
     }
   }
 
   static Future<String> getClasses() async {
+    var client = http.Client();
     final prefs = await SharedPreferences.getInstance();
     var headers = {'Authorization': 'Bearer ${prefs.getString('apiKey')}'};
-    var request =
-        http.Request('GET', Uri.parse('https://api.itech-bs14.de/klasse'));
-    request.body = '''''';
-    request.headers.addAll(headers);
-
-    http.StreamedResponse response = await request.send();
+    var response = await client
+        .get(Uri.parse('https://api.itech-bs14.de/klasse'), headers: headers);
 
     if (response.statusCode == 200) {
-      return await response.stream.bytesToString();
+      client.close();
+      return utf8.decode(response.bodyBytes);
     } else {
-      print(response.reasonPhrase);
+      print(
+          '${'${response.reasonPhrase}${response.statusCode}'}${response.statusCode}');
+      client.close();
+      return '';
+    }
+  }
+
+  static Future<String> getBlockTime() async {
+    var client = http.Client();
+    final prefs = await SharedPreferences.getInstance();
+    var headers = {'Authorization': 'Bearer ${prefs.getString('apiKey')}'};
+    var response = await client.get(
+        Uri.parse(
+            'https://api.itech-bs14.de/klasse/${prefs.getInt('classId')}'),
+        headers: headers);
+
+    if (response.statusCode == 200) {
+      client.close();
+      return utf8.decode(response.bodyBytes);
+    } else {
+      client.close();
+      print('${response.reasonPhrase}${response.statusCode}');
       return '';
     }
   }

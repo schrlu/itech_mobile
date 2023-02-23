@@ -26,125 +26,161 @@ class _BlockplanState extends State<Blockplan> {
   Color color = Colors.black;
 
   String dropdownItem = '';
+  late List<String> itemList;
+
+  bool auth = false;
 
   @override
   Widget build(BuildContext context) {
-    if (widget.prefs.getString('blockplanClass') != '' &&
-        widget.prefs.containsKey('blockplanClass')) {
-      return Scaffold(
-        appBar: AppBar(
-            title: Text(
-                'Blockplan für ${widget.prefs.getString('blockplanClass')}')),
-      );
-    } else {
-      return Scaffold(
-        body: FutureBuilder(
-          future: OwnApi.authstatus(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              if (snapshot.data!) {
-                return FutureBuilder(
-                  future: OwnApi.getClasses(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      getItems(snapshot.data!);
-                      return Scaffold(
-                        appBar: AppBar(
-                          title: const Text('Gebe deine Klasse an'),
-                        ),
-                        body: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              DropdownButton(
-                                hint: Text('Bitte Klasse wählen'),
-                                items: getItems(snapshot.data!)
-                                    .map<DropdownMenuItem<String>>(
-                                  (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  },
-                                ).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    dropdownItem = newValue!;
-                                  });
-                                },
-                                value: dropdownItem,
-                              ),
-                              TextButton(
-                                  child: const Text('Das ist meine Klasse!'),
-                                  onPressed: () {
-                                    widget.prefs.setString(
-                                        'blockplanClass', dropdownItem);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            Blockplan(prefs: widget.prefs),
-                                      ),
-                                    );
-                                  })
-                            ],
-                          ),
-                        ),
-                      );
-                    } else {
-                      return Scaffold(
-                        body: Center(child: Text('Lädt...')),
-                      );
-                    }
-                  },
+    // widget.prefs.setString('apiKey', '7');
+    return Scaffold(
+      drawer: NavBar(prefs: widget.prefs),
+      appBar:
+          AppBar(title: Text('Itech-Blockplanung'), actions: [chooseClass()]),
+      body: FutureBuilder(
+        future: OwnApi.authstatus(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            auth = snapshot.data!;
+            if (auth) {
+              if (widget.prefs.getString('blockplanClass') != '' &&
+                  widget.prefs.containsKey('blockplanClass')) {
+                return ListView(
+                  children: [
+                    FutureBuilder(
+                      future: OwnApi.getBlockTime(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Column(
+                            children: [Text('${snapshot.data}')],
+                          );
+                        } else {
+                          return Center(
+                            child: Text('Lädt...'),
+                          );
+                        }
+                      },
+                    )
+                  ],
                 );
               } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Login(prefs: widget.prefs),
-                  ),
-                );
-                return Scaffold(
-                  appBar: AppBar(title: Text('bla')),
-                  body: Center(child: Text('hi')),
-                );
+                return Center(child: chooseClass());
               }
             } else {
               return Center(
-                child: Text('Lädt...'),
-              );
+                  child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Login(prefs: widget.prefs),
+                            ));
+                      },
+                      child: const Text(
+                          'Für diesen Bereich musst du dich anmelden')));
+              //
             }
-          },
-        ),
-      );
+          } else {
+            return Scaffold(
+                body: Center(
+              child: Text('Lädt...'),
+            ));
+          }
+        },
+      ),
+    );
+  }
 
-      // SimpleDialog(
-      //   title: const Text(
-      //       'Gebe deine Klasse an, um deine Blockzeiten herauszufinden'),
-      //   children: [
-      //     Text('${prefs.getKeys()}'),
-      //     TextButton(
-      //         child: const Text('Keine Klasse wählen'),
-      //         onPressed: () {
-      //           prefs.remove('studentClass');
-      //         })
-      //   ],
-      // );
-    }
+  TextButton chooseClass() {
+    return TextButton(
+        onPressed: () {
+          if (auth) {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return StatefulBuilder(
+                    builder: (context, setState) {
+                      return SimpleDialog(
+                        title: Text('Klasse auswählen'),
+                        children: [
+                          FutureBuilder(
+                            future: OwnApi.getClasses(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                itemList = getItems(snapshot.data!);
+                                return Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      DropdownButton(
+                                        hint: Text('Bitte Klasse wählen'),
+                                        items: itemList
+                                            .map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value),
+                                            );
+                                          },
+                                        ).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            dropdownItem = newValue!;
+                                          });
+                                        },
+                                        value: dropdownItem,
+                                      ),
+                                      TextButton(
+                                          child: const Text(
+                                              'Das ist meine Klasse!'),
+                                          onPressed: () {
+                                            widget.prefs.setString(
+                                                'blockplanClass', dropdownItem);
+                                            widget.prefs.setInt(
+                                                'classId',
+                                                itemList.indexOf(widget.prefs
+                                                        .getString(
+                                                            'blockplanClass')!) +
+                                                    1);
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => Blockplan(
+                                                    prefs: widget.prefs),
+                                              ),
+                                            );
+                                          })
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return Center(child: Text('Lädt...'));
+                              }
+                            },
+                          )
+                        ],
+                      );
+                    },
+                  );
+                });
+          }
+        },
+        child: Text('Klasse auswählen'));
   }
 
   List<String> getItems(String items) {
     List<String> classList = [];
-    for (var i = 0; i < jsonDecode(items).length; i++) {
-      classList.add(jsonDecode(items)[i]['name']);
+
+    if (items != '') {
+      for (var i = 0; i < jsonDecode(items).length; i++) {
+        classList.add(jsonDecode(items)[i]['name']);
+      }
     }
-    print(classList);
 
     if (dropdownItem == '') {
       dropdownItem = classList[0];
     }
-    // print(list);
+
     return classList;
   }
 }

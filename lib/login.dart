@@ -112,48 +112,74 @@ class _LoginState extends State<Login> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20),
-              child: Container(
-                height: 50,
-                width: 250,
-                decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(20)),
-                child: TextButton(
-                  onPressed: () async {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Login...")));
-                    if (await OwnApi.login(usernameController.text,
-                        passwordController.text, tokenController.text)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Login erfolgreich")));
-                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                      if (widget.prefs.getBool('rememberLogin') == true) {
-                        widget.prefs
-                            .setString('username', usernameController.text);
-                        widget.prefs
-                            .setString('password', passwordController.text);
-                      } else {
-                        widget.prefs.setString('username', '');
-                        widget.prefs.setString('password', '');
-                      }
-                      // ignore: use_build_context_synchronously
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => Timetable(
-                                    prefs: widget.prefs,
-                                  )));
-                    } else {
-                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text("Login fehlgeschlagen")));
-                    }
-                  },
-                  child: const Text(
-                    'Login',
-                    style: TextStyle(color: Colors.white, fontSize: 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width / 3,
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: TextButton(
+                      onPressed: () async {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Login...")));
+                        if (await OwnApi.login(usernameController.text,
+                            passwordController.text, tokenController.text)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Login erfolgreich")));
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          if (widget.prefs.getBool('rememberLogin') == true) {
+                            widget.prefs
+                                .setString('username', usernameController.text);
+                            widget.prefs
+                                .setString('password', passwordController.text);
+                          } else {
+                            widget.prefs.setString('username', '');
+                            widget.prefs.setString('password', '');
+                          }
+                          // ignore: use_build_context_synchronously
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      Timetable(prefs: widget.prefs)),
+                              (Route<dynamic> route) => false);
+                        } else {
+                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Login fehlgeschlagen")));
+                        }
+                      },
+                      child: Text(
+                        'Login',
+                        style: TextStyle(color: Colors.white, fontSize: 25),
+                      ),
+                    ),
                   ),
-                ),
+                  Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width / 3,
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: TextButton(
+                      onPressed: () async {
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    Timetable(prefs: widget.prefs)),
+                            (Route<dynamic> route) => false);
+                      },
+                      child: const Text(
+                        'ohne Login',
+                        style: TextStyle(color: Colors.white, fontSize: 25),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             TextButton(

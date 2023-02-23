@@ -4,15 +4,12 @@ import 'package:itech_mobile/ownapi.dart';
 import 'package:itech_mobile/timetable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// void main() {
-//   runApp(MyApp());
-// }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   Widget startWidget;
-  prefs.remove('blockplanClass');
+  // prefs.remove('blockplanClass');
   if (!prefs.containsKey('studentClass')) {
     await prefs.setString('studentClass', '');
   }
