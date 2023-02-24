@@ -27,6 +27,7 @@ class _TimetableState extends State<Timetable> {
         ),
         appBar: AppBar(
           title: const Text('Itech-Mobile'),
+          actions: [OwnApi.logButton(widget.prefs)],
         ),
         body: FutureBuilder(
           future: getPreferences(),

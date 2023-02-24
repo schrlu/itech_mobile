@@ -157,7 +157,7 @@ class _LoginState extends State<Login> {
                       },
                       child: const Text(
                         'Login',
-                        style: TextStyle(color: Colors.white, fontSize: 25),
+                        style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
                     ),
                   ),
@@ -177,7 +177,7 @@ class _LoginState extends State<Login> {
                       },
                       child: const Text(
                         'Ohne Login',
-                        style: TextStyle(color: Colors.white, fontSize: 25),
+                        style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
                     ),
                   ),
@@ -185,7 +185,7 @@ class _LoginState extends State<Login> {
               ),
             ),
             const SizedBox(
-              height: 70,
+              height: 20,
             ),
             TextButton(
               child: const Text(

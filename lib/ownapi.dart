@@ -3,7 +3,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:itech_mobile/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OwnApi {
@@ -22,6 +24,16 @@ class OwnApi {
     var client = HttpClient();
     HttpClientRequest request =
         await client.get('api.itech-bs14.de', 80, '/holiday');
+    HttpClientResponse response = await request.close();
+    final stringData = await response.transform(utf8.decoder).join();
+    client.close();
+    return stringData;
+  }
+
+  static Future<String> getNews() async {
+    var client = HttpClient();
+    HttpClientRequest request =
+        await client.get('api.itech-bs14.de', 80, '/news');
     HttpClientResponse response = await request.close();
     final stringData = await response.transform(utf8.decoder).join();
     client.close();
@@ -49,6 +61,28 @@ class OwnApi {
       return true;
     } else {
       // print('${response.reasonPhrase}${response.statusCode}');
+      client.close();
+      return false;
+    }
+  }
+
+  static Future<bool> signUp(
+      String username, String password, String email) async {
+    var client = http.Client();
+    var headers = {'Content-Type': 'application/json'};
+    var response = await client.post(
+        Uri.parse('https://api.itech-bs14.de/register'),
+        body: json.encode({
+          "username": "$username",
+          "password": "$password",
+          "email": "$email"
+        }),
+        headers: headers);
+
+    if (response.statusCode == 200) {
+      client.close();
+      return true;
+    } else {
       client.close();
       return false;
     }
@@ -106,5 +140,36 @@ class OwnApi {
       // print('${response.reasonPhrase}${response.statusCode}');
       return '';
     }
+  }
+
+  static Widget logButton(SharedPreferences prefs) {
+    return FutureBuilder(
+        future: OwnApi.authstatus(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data!) {
+              return TextButton(
+                  onPressed: () {
+                    prefs.setString('apiKey', '');
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => Login(prefs: prefs)),
+                        (Route<dynamic> route) => false);
+                  },
+                  child: const Text('Logout'));
+            } else {
+              return TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => Login(prefs: prefs)),
+                        (Route<dynamic> route) => false);
+                  },
+                  child: const Text('Login'));
+            }
+          } else {
+            return Container();
+          }
+        });
   }
 }

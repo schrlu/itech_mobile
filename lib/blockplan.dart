@@ -33,8 +33,12 @@ class _BlockplanState extends State<Blockplan> {
     // widget.prefs.setString('apiKey', '7');
     return Scaffold(
       drawer: NavBar(prefs: widget.prefs),
-      appBar:
-          AppBar(title: const Text('Itech-Blockplanung'), actions: [chooseClass()]),
+      appBar: AppBar(
+          title: widget.prefs.containsKey('blockplanClass')
+              ? Text(
+                  'Blockplan für ${widget.prefs.getString('blockplanClass')}')
+              : const Text('Itech-Blockplanung'),
+          actions: [chooseClass(), OwnApi.logButton(widget.prefs)]),
       body: FutureBuilder(
         future: OwnApi.authstatus(),
         builder: (context, snapshot) {
@@ -50,7 +54,14 @@ class _BlockplanState extends State<Blockplan> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return Column(
-                            children: [Text('${snapshot.data}')],
+                            children: [
+                              for (int i = 0;
+                                  i <
+                                      jsonDecode(snapshot.data!)['blockzeiten']
+                                          .length;
+                                  i++)
+                                printContent(snapshot, i)
+                            ],
                           );
                         } else {
                           return const Center(
@@ -89,10 +100,67 @@ class _BlockplanState extends State<Blockplan> {
     );
   }
 
-  TextButton chooseClass() {
-    return TextButton(
-        onPressed: () {
-          if (auth) {
+  Container printContent(AsyncSnapshot<String> snapshot, int i) {
+    if (Theme.of(context).indicatorColor != ThemeData().indicatorColor) {
+      if (color == Colors.grey.shade800) {
+        color = Colors.grey.shade700;
+      } else {
+        color = Colors.grey.shade800;
+      }
+    } else {
+      if (color == Colors.grey.shade300) {
+        color = Colors.grey.shade200;
+      } else {
+        color = Colors.grey.shade300;
+      }
+    }
+    return Container(
+      color: color,
+      padding: EdgeInsets.all(
+        MediaQuery.of(context).size.width / 50,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Von'),
+                Text(format.format(DateTime.parse(
+                    jsonDecode(snapshot.data!)['blockzeiten'][i]
+                        ['date_from']))),
+              ],
+            ),
+          ),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Bis'),
+                Text(format.format(DateTime.parse(
+                    jsonDecode(snapshot.data!)['blockzeiten'][i]['date_to']))),
+              ],
+            ),
+          ),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Anzahl der Tage'),
+                Text('${jsonDecode(snapshot.data!)['blockzeiten'][i]['days']}'),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget chooseClass() {
+    if (auth) {
+      return TextButton(
+          onPressed: () {
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -161,9 +229,11 @@ class _BlockplanState extends State<Blockplan> {
                     },
                   );
                 });
-          }
-        },
-        child: const Text('Klasse auswählen'));
+          },
+          child: const Text('Klasse auswählen'));
+    } else {
+      return Container();
+    }
   }
 
   List<String> getItems(String items) {

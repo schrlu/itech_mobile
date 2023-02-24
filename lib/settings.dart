@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:itech_mobile/navbar.dart';
+import 'package:itech_mobile/ownapi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings extends StatefulWidget {
@@ -17,7 +18,10 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     return Scaffold(
         drawer: NavBar(prefs: widget.prefs),
-        appBar: AppBar(title: const Text('Itech-Mobile')),
+        appBar: AppBar(
+          title: const Text('Itech-Mobile'),
+          actions: [OwnApi.logButton(widget.prefs)],
+        ),
         body: ListView(
           children: [
             classSetting(context, widget.prefs),
