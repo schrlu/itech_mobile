@@ -19,7 +19,7 @@ class _SettingsState extends State<Settings> {
     return Scaffold(
         drawer: NavBar(prefs: widget.prefs),
         appBar: AppBar(
-          title: const Text('Itech-Mobile'),
+          title: const Text('Einstellungen'),
           actions: [OwnApi.logButton(widget.prefs)],
         ),
         body: ListView(
@@ -44,31 +44,43 @@ class _SettingsState extends State<Settings> {
                   title:
                       const Text('Gebe deine Klasse an, um sie zu markieren'),
                   children: [
-                    TextField(
-                        controller: classController,
-                        onSubmitted: (value) {
-                          prefs.setString('studentClass', value.toLowerCase());
-                          Navigator.of(context).pop();
-                          setState(() {});
-                        }),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                          decoration: const InputDecoration(
+                              labelText: 'Klasse',
+                              hintText: 'z.B. IT_n',
+                              border: OutlineInputBorder()),
+                          controller: classController,
+                          onSubmitted: (value) {
+                            prefs.setString(
+                                'studentClass', value.toLowerCase());
+                            Navigator.of(context).pop();
+                            setState(() {});
+                          }),
+                    ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        TextButton(
-                            onPressed: () {
-                              prefs.setString('studentClass',
-                                  classController.text.toLowerCase());
-                              Navigator.of(context).pop();
-                              setState(() {});
-                            },
-                            child: const Text('Bestätigen')),
-                        const Spacer(),
-                        TextButton(
-                            child: const Text('Keine Klasse wählen'),
-                            onPressed: () {
-                              prefs.setString('studentClass', '');
-                              Navigator.of(context).pop();
-                              setState(() {});
-                            }),
+                        Flexible(
+                          child: TextButton(
+                              child: const Text('Keine Klasse wählen'),
+                              onPressed: () {
+                                prefs.setString('studentClass', '');
+                                Navigator.of(context).pop();
+                                setState(() {});
+                              }),
+                        ),
+                        Flexible(
+                          child: TextButton(
+                              onPressed: () {
+                                prefs.setString('studentClass',
+                                    classController.text.toLowerCase());
+                                Navigator.of(context).pop();
+                                setState(() {});
+                              },
+                              child: const Text('Bestätigen')),
+                        ),
                       ],
                     )
                   ],

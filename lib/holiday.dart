@@ -22,7 +22,7 @@ class _HolidayState extends State<Holiday> {
     return Scaffold(
         drawer: NavBar(prefs: widget.prefs),
         appBar: AppBar(
-          title: const Text('Itech-Mobile'),
+          title: const Text('Itech-Blockplan'),
           actions: [OwnApi.logButton(widget.prefs)],
         ),
         body: ListView(

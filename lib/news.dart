@@ -23,7 +23,7 @@ class _NewsState extends State<News> {
     return Scaffold(
         drawer: NavBar(prefs: widget.prefs),
         appBar: AppBar(
-          title: const Text('Itech-Mobile'),
+          title: const Text('Itech-News'),
           actions: [OwnApi.logButton(widget.prefs)],
         ),
         body: ListView(

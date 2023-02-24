@@ -38,7 +38,7 @@ class _LoginState extends State<Login> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Login Page"),
+        title: const Text("Login"),
       ),
       body: SingleChildScrollView(
         child: Column(
