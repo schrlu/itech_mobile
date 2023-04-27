@@ -17,65 +17,45 @@ class Blockplan extends StatefulWidget {
 }
 
 class _BlockplanState extends State<Blockplan> {
+  // Variablen Deklaration
   late int i;
-
   final format = DateFormat('dd.MM.yyy');
-
   Color color = Colors.black;
-
   String dropdownItem = '';
   late List<String> itemList;
-
-  bool auth = false;
+  bool isAuthenticated = false;
 
   @override
   Widget build(BuildContext context) {
-    // widget.prefs.setString('apiKey', '7');
     return Scaffold(
       drawer: NavBar(prefs: widget.prefs),
       appBar: AppBar(
           title: widget.prefs.containsKey('blockplanClass')
               ? Text(
-                  'Blockplan für ${widget.prefs.getString('blockplanClass')}')
+                  'Blockplan für\n${widget.prefs.getString('blockplanClass')}')
               : const Text('Itech-Blockplanung'),
           actions: [chooseClass(), OwnApi.logButton(widget.prefs)]),
+      // Prüfung des Authentifizierungsstatus
       body: FutureBuilder(
         future: OwnApi.authstatus(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            auth = snapshot.data!;
-            if (auth) {
+            isAuthenticated = snapshot.data!;
+            // Wenn der Authentifizierungsstatus true ist, wird geprüft ob eine Klasse
+            // gewählt wurde
+            if (isAuthenticated) {
+              // Wenn eine Klasse für den Blockplan gewählt wurde, wird für diese
+              // der Blockplan ausgegeben, ansonsten soll sie gewählt werden
               if (widget.prefs.getString('blockplanClass') != '' &&
                   widget.prefs.containsKey('blockplanClass')) {
-                return ListView(
-                  children: [
-                    FutureBuilder(
-                      future: OwnApi.getBlockTime(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return Column(
-                            children: [
-                              for (int i = 0;
-                                  i <
-                                      jsonDecode(snapshot.data!)['blockzeiten']
-                                          .length;
-                                  i++)
-                                printContent(snapshot, i)
-                            ],
-                          );
-                        } else {
-                          return const Center(
-                            child: Text('Lädt...'),
-                          );
-                        }
-                      },
-                    )
-                  ],
-                );
+                return printBlockplan();
               } else {
                 return Center(child: chooseClass());
               }
-            } else {
+            }
+            // Wenn der Authentifizierungsstatus false ist,
+            // wird angeboten sich anzumelden
+            else {
               return Center(
                   child: TextButton(
                       onPressed: () {
@@ -100,7 +80,36 @@ class _BlockplanState extends State<Blockplan> {
     );
   }
 
+  // Ausgabe des Blockplans
+  ListView printBlockplan() {
+    return ListView(
+      children: [
+        FutureBuilder(
+          future: OwnApi.getBlockTime(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Column(
+                children: [
+                  for (int i = 0;
+                      i < jsonDecode(snapshot.data!)['blockzeiten'].length;
+                      i++)
+                    printContent(snapshot, i)
+                ],
+              );
+            } else {
+              return const Center(
+                child: Text('Lädt...'),
+              );
+            }
+          },
+        )
+      ],
+    );
+  }
+
+  // Ausgabe eines einzelnen Blockplan-Elements
   Container printContent(AsyncSnapshot<String> snapshot, int i) {
+    // Bestimmung der Hintergrundfarbe des Elements
     if (Theme.of(context).indicatorColor != ThemeData().indicatorColor) {
       if (color == Colors.grey.shade800) {
         color = Colors.grey.shade700;
@@ -114,6 +123,7 @@ class _BlockplanState extends State<Blockplan> {
         color = Colors.grey.shade300;
       }
     }
+    // Formartierte ausgabe der Blockplan-Informationen
     return Container(
       color: color,
       padding: EdgeInsets.all(
@@ -157,85 +167,111 @@ class _BlockplanState extends State<Blockplan> {
     );
   }
 
-  Widget chooseClass() {
-    if (auth) {
-      return TextButton(
-          onPressed: () {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return StatefulBuilder(
-                    builder: (context, setState) {
-                      return SimpleDialog(
-                        title: const Text('Klasse auswählen'),
-                        children: [
-                          FutureBuilder(
-                            future: OwnApi.getClasses(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                itemList = getItems(snapshot.data!);
-                                return Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      DropdownButton(
-                                        hint: const Text('Bitte Klasse wählen'),
-                                        items: itemList
-                                            .map<DropdownMenuItem<String>>(
-                                          (String value) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              child: Text(value),
-                                            );
-                                          },
-                                        ).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            dropdownItem = newValue!;
-                                          });
-                                        },
-                                        value: dropdownItem,
-                                      ),
-                                      TextButton(
-                                          child: const Text(
-                                              'Das ist meine Klasse!'),
-                                          onPressed: () {
-                                            widget.prefs.setString(
-                                                'blockplanClass', dropdownItem);
-                                            widget.prefs.setInt(
-                                                'classId',
-                                                itemList.indexOf(widget.prefs
-                                                        .getString(
-                                                            'blockplanClass')!) +
-                                                    1);
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => Blockplan(
-                                                    prefs: widget.prefs),
+  // Auswahl der Klasse
+  FutureBuilder chooseClass() {
+    return FutureBuilder(
+        future: OwnApi.authstatus(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            // Nur wenn der Authentifizierungsstatus true ist
+            // hat man die Möglichkeit die Klasse zu wählen
+            if (snapshot.data) {
+              return TextButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return StatefulBuilder(
+                            builder: (context, setState) {
+                              return SimpleDialog(
+                                title: const Text('Klasse wählen'),
+                                children: [
+                                  // API-Request für die Liste der Klassen
+                                  FutureBuilder(
+                                    future: OwnApi.getClasses(),
+                                    builder: (context, snapshot) {
+                                      // Bei Erhalt der Liste wird sie in einem Array gespeichert
+                                      if (snapshot.hasData) {
+                                        itemList = getItems(snapshot.data!);
+                                        return Center(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              // Dropdown für Auswahl der Klasse
+                                              DropdownButton(
+                                                hint: const Text(
+                                                    'Bitte Klasse wählen'),
+                                                items: itemList.map<
+                                                    DropdownMenuItem<String>>(
+                                                  (String value) {
+                                                    return DropdownMenuItem<
+                                                        String>(
+                                                      value: value,
+                                                      child: Text(value),
+                                                    );
+                                                  },
+                                                ).toList(),
+                                                // Bei Auswahl eines Elements soll das ausgewählte Element als
+                                                // ausgewählt angezeigt werden
+                                                onChanged: (String? newValue) {
+                                                  setState(() {
+                                                    dropdownItem = newValue!;
+                                                  });
+                                                },
+                                                value: dropdownItem,
                                               ),
-                                            );
-                                          })
-                                    ],
-                                  ),
-                                );
-                              } else {
-                                return const Center(child: Text('Lädt...'));
-                              }
+                                              // Bestätigungs-Button zum Auswählen der Klasse
+                                              TextButton(
+                                                  child: const Text(
+                                                      'Das ist meine Klasse!'),
+                                                  onPressed: () {
+                                                    widget.prefs.setString(
+                                                        'blockplanClass',
+                                                        dropdownItem);
+                                                    widget.prefs.setInt(
+                                                        'classId',
+                                                        itemList.indexOf(widget
+                                                                .prefs
+                                                                .getString(
+                                                                    'blockplanClass')!) +
+                                                            1);
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            Blockplan(
+                                                                prefs: widget
+                                                                    .prefs),
+                                                      ),
+                                                    );
+                                                  })
+                                            ],
+                                          ),
+                                        );
+                                      } else {
+                                        return const Center(
+                                            child: Text('Lädt...'));
+                                      }
+                                    },
+                                  )
+                                ],
+                              );
                             },
-                          )
-                        ],
-                      );
-                    },
-                  );
-                });
-          },
-          child: const Text('Klasse auswählen'));
-    } else {
-      return Container();
-    }
+                          );
+                        });
+                  },
+                  child: const Text('Klasse wählen'));
+            } else {
+              return Container();
+            }
+          } else {
+            return Container();
+          }
+        });
   }
 
+  // Befüllung einer List mit Inhalt eines Jsons
   List<String> getItems(String items) {
     List<String> classList = [];
 

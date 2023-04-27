@@ -15,6 +15,7 @@ class News extends StatefulWidget {
 }
 
 class _NewsState extends State<News> {
+  // Variablen Deklaration
   late int i;
   final format = DateFormat('dd.MM.yyy');
   Color color = Colors.black;
@@ -26,6 +27,7 @@ class _NewsState extends State<News> {
           title: const Text('Itech-News'),
           actions: [OwnApi.logButton(widget.prefs)],
         ),
+        // Ausgabe jedes News-Eintrages
         body: ListView(
           children: [
             FutureBuilder(
@@ -48,8 +50,10 @@ class _NewsState extends State<News> {
         ));
   }
 
+  // Ausgabe eines einzelnen Elements
   Container printContent(
       AsyncSnapshot<String> snapshot, int i, BuildContext context) {
+    // Bestimmung der Hintergrundfarbe des Elements
     if (Theme.of(context).indicatorColor != ThemeData().indicatorColor) {
       if (color == Colors.grey.shade800) {
         color = Colors.grey.shade700;
@@ -63,6 +67,7 @@ class _NewsState extends State<News> {
         color = Colors.grey.shade300;
       }
     }
+    // Formatierung des Elements
     return Container(
       color: color,
       child: ListTile(

@@ -14,6 +14,7 @@ class Timetable extends StatefulWidget {
 }
 
 class _TimetableState extends State<Timetable> {
+  // Variablen Deklaration
   late int i;
   late int j;
   final format = DateFormat('dd.MM.yyy');
@@ -27,57 +28,48 @@ class _TimetableState extends State<Timetable> {
         ),
         appBar: AppBar(
           title: const Text('Itech-Mobile'),
-          actions: [OwnApi.logButton(widget.prefs)],
+          actions: [
+            markClass(context, widget.prefs),
+            OwnApi.logButton(widget.prefs)
+          ],
         ),
-        body: FutureBuilder(
-          future: getPreferences(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              prefs = snapshot.data!;
-              return SingleChildScrollView(
-                  child: FutureBuilder(
-                      future: OwnApi.getTimetable(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return Column(
+        body: SingleChildScrollView(
+            child: FutureBuilder(
+                future: OwnApi.getTimetable(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      children: [
+                        // Gruppenwechsel über zweidimensionales Array
+                        for (i = 0;
+                            i <
+                                jsonDecode(snapshot.data as String)['dates']
+                                    .length;
+                            i++)
+                          Column(
                             children: [
-                              for (i = 0;
-                                  i <
-                                      jsonDecode(
-                                              snapshot.data as String)['dates']
+                              newWeekDay(snapshot.data as String),
+                              for (j = 0;
+                                  j <
+                                      jsonDecode(snapshot.data as String)[
+                                              'dates'][i]['results']
                                           .length;
-                                  i++)
-                                Column(
-                                  children: [
-                                    newWeekDay(snapshot.data as String),
-                                    for (j = 0;
-                                        j <
-                                            jsonDecode(snapshot.data as String)[
-                                                    'dates'][i]['results']
-                                                .length;
-                                        j++)
-                                      Container(
-                                        child: printContent(
-                                            snapshot.data as String),
-                                      )
-                                  ],
+                                  j++)
+                                Container(
+                                  child: printContent(snapshot.data as String),
                                 )
                             ],
-                          );
-                        } else {
-                          return const Center(child: Text('Lädt...'));
-                        }
-                      }));
-            } else {
-              return const Center(
-                child: Text('Lädt...'),
-              );
-            }
-          },
-        ),
+                          )
+                      ],
+                    );
+                  } else {
+                    return const Center(child: Text('Lädt...'));
+                  }
+                })),
         floatingActionButton: createRefreshButton());
   }
 
+  // Button zum aktualisieren des Vertretungsplan
   FloatingActionButton createRefreshButton() {
     if (Theme.of(context).indicatorColor != ThemeData().indicatorColor) {
       color = Colors.blue.shade800;
@@ -92,18 +84,19 @@ class _TimetableState extends State<Timetable> {
           content: Text("Aktualisiert"),
         ));
       },
-      // ignore: sort_child_properties_last
+      tooltip: 'refresh',
       child: const Icon(
         color: Colors.white,
         Icons.refresh,
       ),
-      tooltip: 'refresh',
     );
   }
 
+  // Ausgabe eines einzelnen Elements
   Container printContent(String data) {
-    if (prefs!.containsKey('studentClass') &&
-        prefs!.getString('studentClass') ==
+    // Bestimmung der Hintergrundfarbe des Elements
+    if (widget.prefs.containsKey('studentClass') &&
+        widget.prefs.getString('studentClass') ==
             jsonDecode(data)['dates'][i]['results'][j]['class']
                 .toString()
                 .toLowerCase()) {
@@ -123,7 +116,7 @@ class _TimetableState extends State<Timetable> {
         }
       }
     }
-
+    // Formatierung des Vertretungsplanelements
     return Container(
       color: color,
       child: ListTile(
@@ -138,6 +131,7 @@ class _TimetableState extends State<Timetable> {
     );
   }
 
+  // Auslesen der jeweiligen Information
   SizedBox newContentColumn(String data, String heading, String content) {
     return SizedBox(
       width: ((MediaQuery.of(context).size.width) / 4) - 8,
@@ -163,12 +157,12 @@ class _TimetableState extends State<Timetable> {
     );
   }
 
+  // Trenner-Element zwischen den Wochentagen
   Container newWeekDay(String data) {
     DateTime date =
         DateTime.parse(jsonDecode(data)['dates'][i]['date'].toString());
     color = Colors.blue.shade800;
 
-    // color = Colors.black;
     if (!jsonDecode(data)['dates'][i]['results'].isEmpty) {
       return Container(
           color: color,
@@ -184,8 +178,64 @@ class _TimetableState extends State<Timetable> {
     }
   }
 
-  Future<SharedPreferences> getPreferences() async {
-    prefs = await SharedPreferences.getInstance();
-    return prefs!;
+  // Button zur Bestimmung der zu markierenden Klasse
+  TextButton markClass(BuildContext context, SharedPreferences prefs) {
+    final classController = TextEditingController();
+    return TextButton(
+      child: Text(
+          '${prefs.getString('studentClass') != '' ? prefs.getString('studentClass') : 'Klasse markieren'}'),
+      onPressed: () {
+        // Dialog mit Textfeld zur Eingabe der Klasse
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              classController.text = prefs.getString('studentClass')!;
+              return SimpleDialog(
+                title: const Text('Gebe deine Klasse an, um sie zu markieren'),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                        decoration: const InputDecoration(
+                            labelText: 'Klasse',
+                            hintText: 'z.B. IT_n',
+                            border: OutlineInputBorder()),
+                        controller: classController,
+                        onSubmitted: (value) {
+                          prefs.setString('studentClass', value.toLowerCase());
+                          Navigator.of(context).pop();
+                          setState(() {});
+                        }),
+                  ),
+                  // Reihe mit Buttons zum bestätigen und und abbrechen
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: TextButton(
+                            child: const Text('Keine Klasse wählen'),
+                            onPressed: () {
+                              prefs.setString('studentClass', '');
+                              Navigator.of(context).pop();
+                              setState(() {});
+                            }),
+                      ),
+                      Flexible(
+                        child: TextButton(
+                            onPressed: () {
+                              prefs.setString('studentClass',
+                                  classController.text.toLowerCase());
+                              Navigator.of(context).pop();
+                              setState(() {});
+                            },
+                            child: const Text('Bestätigen')),
+                      ),
+                    ],
+                  )
+                ],
+              );
+            });
+      },
+    );
   }
 }

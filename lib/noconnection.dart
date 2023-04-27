@@ -16,6 +16,7 @@ class NoConnection extends StatefulWidget {
 }
 
 class _NoConnectionState extends State<NoConnection> {
+  // Variablen Deklaration
   late Widget startWidget;
   @override
   Widget build(BuildContext context) {
@@ -27,6 +28,7 @@ class _NoConnectionState extends State<NoConnection> {
           child: TextButton(
         child: const Text('Erneut versuchen'),
         onPressed: () async {
+          // Test der Internet Verbindung, bei erfolg → Weiterleitung zur Login Seite
           try {
             final result = await InternetAddress.lookup('example.com');
             if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {

@@ -9,10 +9,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Variablen Deklaration
   SharedPreferences prefs = await SharedPreferences.getInstance();
   Widget startWidget;
-  // prefs.clear();
-  // prefs.remove('blockplanClass');
+
+  // Vorbefüllung der Präferenzen
   if (!prefs.containsKey('studentClass')) {
     await prefs.setString('studentClass', '');
   }
@@ -25,17 +26,18 @@ Future<void> main() async {
   if (!prefs.containsKey('password')) {
     prefs.setString('password', '');
   }
+  // Testen der Internetverbindung
+  // Bei Aktiver Internet Verbindung → Leitung zum Login, sonst Fehler anzeigen
   try {
-    
     final result = await InternetAddress.lookup('example.com');
     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
       if (await OwnApi.authstatus()) {
-      startWidget = Timetable(
-        prefs: prefs,
-      );
-    } else {
-      startWidget = Login(prefs: prefs);
-    }
+        startWidget = Timetable(
+          prefs: prefs,
+        );
+      } else {
+        startWidget = Login(prefs: prefs);
+      }
       runApp(MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Itech-Mobile',
@@ -49,8 +51,6 @@ Future<void> main() async {
         title: 'Itech-Mobile',
         darkTheme: ThemeData.dark(),
         theme: ThemeData.light(),
-        home: NoConnection(
-          prefs: prefs
-        )));
+        home: NoConnection(prefs: prefs)));
   }
 }

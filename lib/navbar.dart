@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:itech_mobile/blockplan.dart';
 import 'package:itech_mobile/holiday.dart';
 import 'package:itech_mobile/news.dart';
-import 'package:itech_mobile/settings.dart';
 import 'package:itech_mobile/timetable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,15 +35,13 @@ class NavBar extends StatelessWidget {
             Site('Blockplan', Icons.calendar_month, Blockplan(prefs: prefs),
                 'blockplan'),
             Site('News', Icons.newspaper, News(prefs: prefs), 'news'),
-            Site('Einstellungen', Icons.settings, Settings(prefs: prefs),
-                'settings'),
           ],
         ));
   }
 }
 
-// ignore: must_be_immutable
 class Site extends StatelessWidget {
+  // Variablen Deklaration
   IconData icon;
   Widget page;
   String title;

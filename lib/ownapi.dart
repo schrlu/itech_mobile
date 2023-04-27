@@ -9,6 +9,7 @@ import 'package:itech_mobile/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OwnApi {
+  // API Request für Vertretungsplan
   static Future<String> getTimetable() async {
     var client = HttpClient();
     HttpClientRequest request =
@@ -20,6 +21,7 @@ class OwnApi {
     return stringData;
   }
 
+  // API Request für Ferienplan
   static Future<String> getHoliday() async {
     var client = HttpClient();
     HttpClientRequest request =
@@ -30,6 +32,7 @@ class OwnApi {
     return stringData;
   }
 
+  // API Request für News
   static Future<String> getNews() async {
     var client = HttpClient();
     HttpClientRequest request =
@@ -40,6 +43,7 @@ class OwnApi {
     return stringData;
   }
 
+  // API Request für Login
   static Future<bool> login(
       String username, String password, String token) async {
     var client = http.Client();
@@ -60,12 +64,12 @@ class OwnApi {
       client.close();
       return true;
     } else {
-      // print('${response.reasonPhrase}${response.statusCode}');
       client.close();
       return false;
     }
   }
 
+  // API Request für Registration
   static Future<bool> signUp(
       String username, String password, String email) async {
     var client = http.Client();
@@ -88,6 +92,7 @@ class OwnApi {
     }
   }
 
+  // API Request für Authentifizierungsstatus
   static Future<bool> authstatus() async {
     final prefs = await SharedPreferences.getInstance();
     var client = http.Client();
@@ -106,6 +111,7 @@ class OwnApi {
     }
   }
 
+  // API Request für Klassenliste
   static Future<String> getClasses() async {
     var client = http.Client();
     final prefs = await SharedPreferences.getInstance();
@@ -117,12 +123,12 @@ class OwnApi {
       client.close();
       return utf8.decode(response.bodyBytes);
     } else {
-      // print('${response.reasonPhrase}${response.statusCode}');
       client.close();
       return '';
     }
   }
 
+  // API Request für Blockzeiten
   static Future<String> getBlockTime() async {
     var client = http.Client();
     final prefs = await SharedPreferences.getInstance();
@@ -142,6 +148,7 @@ class OwnApi {
     }
   }
 
+  // Login/Out Button
   static Widget logButton(SharedPreferences prefs) {
     return FutureBuilder(
         future: OwnApi.authstatus(),

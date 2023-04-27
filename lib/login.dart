@@ -16,16 +16,11 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  // Erstellung der Controller für die Textfelder
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController tokenController = TextEditingController();
   bool passwordVisible = true;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   passwordVisible = true;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -40,21 +35,21 @@ class _LoginState extends State<Login> {
       appBar: AppBar(
         title: const Text("Login"),
       ),
+      // Bild scrollable machen, falls der Bildschirm zu klein ist
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            // Ausgabe des Itech-Logos
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 30, 0, 30),
               child: Center(
                 child: SizedBox(
                     width: 300,
                     height: 150,
-                    /*decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(50.0)),*/
                     child: Image.asset('images/Itech.png')),
               ),
             ),
+            // Eingabefeld Benutzername
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
@@ -65,13 +60,14 @@ class _LoginState extends State<Login> {
                     hintText: 'Moodle-Benutzername'),
               ),
             ),
+            // Eingabefeld Passwort
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
                 controller: passwordController,
                 obscureText: passwordVisible,
+                // Button für Sichtbarkeit/Unsichtbarkeit des Passworts
                 decoration: InputDecoration(
                     suffixIcon: IconButton(
                       icon: Icon(passwordVisible
@@ -90,10 +86,10 @@ class _LoginState extends State<Login> {
                     hintText: 'Dein Moodle-Passwort'),
               ),
             ),
+            // Eingabefeld 2FA-Token
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 20),
-              //padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
                 controller: tokenController,
                 obscureText: true,
@@ -103,6 +99,7 @@ class _LoginState extends State<Login> {
                     hintText: 'Zweifaktor Authentifizierungs-Token'),
               ),
             ),
+            // Checkbox für merken des Passworts und Benutzernamens
             CheckboxListTile(
               value: widget.prefs.getBool('rememberLogin'),
               title: const Text('Anmeldedaten speichern'),
@@ -112,6 +109,7 @@ class _LoginState extends State<Login> {
                 });
               },
             ),
+            // Login Button
             Padding(
               padding: const EdgeInsets.only(top: 20),
               child: Row(
@@ -124,9 +122,12 @@ class _LoginState extends State<Login> {
                         color: Colors.blue,
                         borderRadius: BorderRadius.circular(20)),
                     child: TextButton(
+                      // Bei betätigung Login-Status in der Snackbar anzeigen
                       onPressed: () async {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Login...")));
+                        // Bei erfolgreichem Login + aktivierten remember Login
+                        // werden die Login-Daten gespeichert
                         if (await OwnApi.login(usernameController.text,
                             passwordController.text, tokenController.text)) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -161,6 +162,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                   ),
+                  // Button für Nutzung ohne Anmeldung
                   Container(
                     height: 50,
                     width: MediaQuery.of(context).size.width / 2.5,
@@ -187,6 +189,7 @@ class _LoginState extends State<Login> {
             const SizedBox(
               height: 20,
             ),
+            // Button zur Registrationsseite
             TextButton(
               child: const Text(
                   'Neu? Hier Zweifaktor Authentifizierung einrichten'),

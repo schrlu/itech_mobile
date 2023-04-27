@@ -14,6 +14,7 @@ class Holiday extends StatefulWidget {
 }
 
 class _HolidayState extends State<Holiday> {
+  // Variablen Deklaration
   late int i;
   final format = DateFormat('dd.MM.yyy');
   Color color = Colors.black;
@@ -27,11 +28,13 @@ class _HolidayState extends State<Holiday> {
         ),
         body: ListView(
           children: [
+            // Request der Feriendaten
             FutureBuilder(
                 future: OwnApi.getHoliday(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return Column(children: [
+                      // Ausgabe der Feriendaten
                       for (int i = 0;
                           i < jsonDecode(snapshot.data as String).length;
                           i++)
@@ -49,6 +52,7 @@ class _HolidayState extends State<Holiday> {
 
   Container printContent(
       AsyncSnapshot<String> snapshot, int i, BuildContext context) {
+    // Bestimmung der Hintergrundfarbe des Elements
     if (Theme.of(context).indicatorColor != ThemeData().indicatorColor) {
       if (color == Colors.grey.shade800) {
         color = Colors.grey.shade700;
@@ -62,6 +66,7 @@ class _HolidayState extends State<Holiday> {
         color = Colors.grey.shade300;
       }
     }
+    // Formattierung der Einzelnen Elemente
     return Container(
       color: color,
       child: ListTile(
