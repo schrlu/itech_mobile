@@ -15,6 +15,7 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
+  // Variablen Deklaration
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -28,18 +29,17 @@ class _SignupState extends State<Signup> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            // Ausgabe des Itech-Logos
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 30, 0, 30),
               child: Center(
                 child: SizedBox(
                     width: 300,
                     height: 150,
-                    /*decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(50.0)),*/
                     child: Image.asset('images/Itech.png')),
               ),
             ),
+            // Eingabefeld für Benutzernamen
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
@@ -50,6 +50,7 @@ class _SignupState extends State<Signup> {
                     hintText: 'Moodle-Benutzername'),
               ),
             ),
+            // Eingabefeld für Passwort
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
@@ -75,6 +76,7 @@ class _SignupState extends State<Signup> {
                     hintText: 'Dein Moodle-Passwort'),
               ),
             ),
+            // Eingabefeld für E-Mail
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
@@ -87,6 +89,7 @@ class _SignupState extends State<Signup> {
                     hintText: 'someone@example.com'),
               ),
             ),
+            // Remember Login Checkbox
             CheckboxListTile(
               value: widget.prefs.getBool('rememberLogin'),
               title: const Text('Anmeldedaten speichern'),
@@ -96,6 +99,7 @@ class _SignupState extends State<Signup> {
                 });
               },
             ),
+            // Registationsbutton
             Padding(
               padding: const EdgeInsets.only(top: 20),
               child: Container(
@@ -142,6 +146,7 @@ class _SignupState extends State<Signup> {
             const SizedBox(
               height: 100,
             ),
+            // Route zum Login
             TextButton(
               child: const Text('Bereits registriert? Hier gehts zum Login'),
               onPressed: () async {
