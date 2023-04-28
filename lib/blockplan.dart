@@ -184,7 +184,13 @@ class _BlockplanState extends State<Blockplan> {
                           return StatefulBuilder(
                             builder: (context, setState) {
                               return SimpleDialog(
-                                title: const Text('Klasse wählen'),
+                                title: Text('Klasse wählen',
+                                    style: TextStyle(
+                                        color:
+                                            Theme.of(context).indicatorColor !=
+                                                    ThemeData().indicatorColor
+                                                ? Colors.blue
+                                                : Colors.white)),
                                 children: [
                                   // API-Request für die Liste der Klassen
                                   FutureBuilder(

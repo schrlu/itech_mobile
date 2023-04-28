@@ -172,7 +172,14 @@ class OwnApi {
                             builder: (context) => Login(prefs: prefs)),
                         (Route<dynamic> route) => false);
                   },
-                  child: const Text('Login'));
+                  child: Text(
+                    'Login',
+                    style: TextStyle(
+                        color: Theme.of(context).indicatorColor !=
+                                ThemeData().indicatorColor
+                            ? Colors.blue
+                            : Colors.white),
+                  ));
             }
           } else {
             return Container();

@@ -183,7 +183,12 @@ class _TimetableState extends State<Timetable> {
     final classController = TextEditingController();
     return TextButton(
       child: Text(
-          '${prefs.getString('studentClass') != '' ? prefs.getString('studentClass') : 'Klasse markieren'}'),
+          '${prefs.getString('studentClass') != '' ? prefs.getString('studentClass') : 'Klasse markieren'}',
+          style: TextStyle(
+              color:
+                  Theme.of(context).indicatorColor != ThemeData().indicatorColor
+                      ? Colors.blue
+                      : Colors.white)),
       onPressed: () {
         // Dialog mit Textfeld zur Eingabe der Klasse
         showDialog(
